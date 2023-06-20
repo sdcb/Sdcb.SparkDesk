@@ -2,7 +2,8 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net6</TargetFrameworks>
-    <Description>Unofficial Xunfei's "Xinghuo" SparkDesk big model sdk for .NET</Description>
+    <Description>An unofficial open-source project that provides a .NET client for the SparkDesk WebSocket API(https://console.xfyun.cn/services/cbm).
+讯飞星火大模型WebSocket API的非官方.NET开源客户端。</Description>
     <Copyright>MIT</Copyright>
     <PackageIcon>spark-icon.png</PackageIcon>
     <LangVersion>11</LangVersion>
@@ -11,10 +12,19 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PackageProjectUrl>https://github.com/sdcb/Sdcb.SparkDesk</PackageProjectUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/sdcb/Sdcb.SparkDesk</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>sdcb;spark desk;xinghuo;xfyun;websocket;</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
     <None Include="..\build\spark-icon.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\README.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>

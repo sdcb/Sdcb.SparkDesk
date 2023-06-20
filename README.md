@@ -1,8 +1,10 @@
 # Sdcb.SparkDesk [![NuGet](https://img.shields.io/nuget/v/Sdcb.SparkDesk.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/Sdcb.SparkDesk/) [![NuGet](https://img.shields.io/nuget/dt/Sdcb.SparkDesk.svg?style=flat-square)](https://www.nuget.org/packages/Sdcb.SparkDesk/) [![GitHub](https://img.shields.io/github/license/sdcb/Sdcb.SparkDesk.svg?style=flat-square&label=license)](https://github.com/sdcb/Sdcb.SparkDesk/blob/master/LICENSE.txt)
 
-Sdcb.SparkDesk is an unofficial open-source project that provides a .NET client for the SparkDesk API(https://console.xfyun.cn/services/cbm). 
+`Sdcb.SparkDesk` is an unofficial open-source project that provides a .NET client for SparkDesk WebSocket API(https://console.xfyun.cn/services/cbm). Upstream document: https://www.xfyun.cn/doc/spark/Guide.html
 
 It can be used to build chatbots and virtual assistants that can communicate with users in natural language.
+
+`Sdcb.SparkDesk`是讯飞星火大模型WebSocket API的非官方.NET开源客户端(https://console.xfyun.cn/services/cbm)。
 
 ## Features
 
