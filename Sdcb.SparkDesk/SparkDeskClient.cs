@@ -74,27 +74,28 @@ public class SparkDeskClient
         await webSocket.SendAsync(messageBuffer, WebSocketMessageType.Text, true, cancellationToken).ConfigureAwait(false);
 
         byte[] buffer = new byte[65536];
-        WebSocketReceiveResult result;
 
         do
         {
             ArraySegment<byte> arraySegment = new(buffer);
-            result = await webSocket.ReceiveAsync(arraySegment, cancellationToken).ConfigureAwait(false);
+            WebSocketReceiveResult result = await webSocket.ReceiveAsync(arraySegment, cancellationToken).ConfigureAwait(false);
 
-            if (result.MessageType == WebSocketMessageType.Close)
+            if (result.MessageType == WebSocketMessageType.Text)
             {
-                Console.WriteLine("服务器连接关闭.");
-            }
-            else
-            {
-                ApiResponse resp = (await JsonSerializer.DeserializeAsync<ApiResponse>(new MemoryStream(buffer, 0, result.Count), cancellationToken: cancellationToken))!;
+                ApiResponse? resp = (await JsonSerializer.DeserializeAsync<ApiResponse>(new MemoryStream(buffer, 0, result.Count), cancellationToken: cancellationToken));
+                if (resp == null) break;
+
                 yield return string.Concat(resp.Payload!.Choices.Text.Select(x => x.Content));
+
                 if (resp.Header.Status == 2)
                 {
                     break;
                 }
             }
-
+            else
+            {
+                throw new SparkDeskException($"Unexpected websocket message type: \"{result.MessageType}\", expect \"text\".");
+            }
         } while (!cancellationToken.IsCancellationRequested);
 
         if (webSocket.State == WebSocketState.Open)
