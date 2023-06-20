@@ -32,7 +32,7 @@ SparkDeskClient client = new SparkDeskClient(appId, apiKey, apiSecret);
 The following example shows how to use the `ChatAsync` method to chat with a virtual assistant:
 
 ```csharp
-SparkDeskClient client = CreateSparkDeskClient();
+SparkDeskClient client = new SparkDeskClient(appId, apiKey, apiSecret);
 ChatResponse response = await client.ChatAsync(new ChatMessage[] 
 {
     ChatMessage.FromUser("系统提示：你叫张三，一名5岁男孩，你在金色摇篮幼儿园上学，你的妈妈叫李四，是一名工程师"),
@@ -46,7 +46,7 @@ Console.WriteLine(response.Text);
 The following example shows how to use the `ChatAsStreamAsync` method to chat with a virtual assistant using streaming API:
 
 ```csharp
-SparkDeskClient client = CreateSparkDeskClient();
+SparkDeskClient client = new SparkDeskClient(appId, apiKey, apiSecret);
 await foreach (StreamedChatResponse msg in client.ChatAsStreamAsync(new ChatMessage[] { ChatMessage.FromUser("湖南的省会在哪？") }, new ChatRequestParameters
 {
     ChatId = "test",
@@ -64,7 +64,7 @@ await foreach (StreamedChatResponse msg in client.ChatAsStreamAsync(new ChatMess
 The following example shows how to use the `ChatAsStreamViaCallbackAsync` method to chat with a virtual assistant using streaming API and callback:
 
 ```csharp
-SparkDeskClient client = CreateSparkDeskClient();
+SparkDeskClient client = new SparkDeskClient(appId, apiKey, apiSecret);
 StringBuilder sb = new();
 TokensUsage usage = await client.ChatAsStreamAsync(new ChatMessage[] 
 { 
