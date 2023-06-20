@@ -12,6 +12,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "解决方案项", "解决�
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{8D3FEA29-09ED-45C2-A3AA-258CB0106AEA}"
+	ProjectSection(SolutionItems) = preProject
+		build\00-common.linq = build\00-common.linq
+		build\01-build-packages.linq = build\01-build-packages.linq
+		build\02-publish-proget-nuget.linq = build\02-publish-proget-nuget.linq
+		build\spark-icon.png = build\spark-icon.png
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

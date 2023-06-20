@@ -82,4 +82,4 @@ Console.WriteLine(realResponse);
 
 ## License
 
-Sdcb.SparkDesk is licensed under the MIT License. See the [LICENSE](LICENSE) file for more information.
+Sdcb.SparkDesk is licensed under the MIT License. See the [LICENSE.txt](LICENSE.txt) file for more information.
