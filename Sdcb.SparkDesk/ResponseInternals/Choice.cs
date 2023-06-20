@@ -1,11 +1,11 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Sdcb.SparkDesk;
+namespace Sdcb.SparkDesk.ResponseInternals;
 
 /// <summary>
 /// Represents the choices part of the API payload.
 /// </summary>
-public class Choice
+internal class Choice
 {
     /// <summary>
     /// Text response status, values are [0, 1, 2]; 0 represents the first text result; 1 represents the intermediate text result; 2 represents the last text result.

@@ -1,11 +1,11 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Sdcb.SparkDesk;
+namespace Sdcb.SparkDesk.ResponseInternals;
 
 /// <summary>
 /// Represents the payload part of the API response.
 /// </summary>
-public class ApiPayload
+internal class ApiPayload
 {
     /// <summary>
     /// The choices part of the payload.

@@ -1,17 +1,17 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Sdcb.SparkDesk;
+namespace Sdcb.SparkDesk.RequestInternals;
 
 /// <summary>
 /// Represents the main structure of the JSON for the chat API request.
 /// </summary>
-public class ChatApiRequest
+internal class ChatApiRequest
 {
     /// <summary>
     /// Contains header information such as app_id and uid.
     /// </summary>
     [JsonPropertyName("header")]
-    public required Header Header { get; set; }
+    public required ChatRequestHeader Header { get; set; }
 
     /// <summary>
     /// Contains parameter information for the chat domain, temperature, max tokens, etc.

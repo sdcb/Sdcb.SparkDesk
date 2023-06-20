@@ -1,11 +1,11 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Sdcb.SparkDesk;
+namespace Sdcb.SparkDesk.ResponseInternals;
 
 /// <summary>
 /// Represents a text object in the choices part of the API payload.
 /// </summary>
-public class ResponseChatMessage
+internal class ResponseChatMessage
 {
     /// <summary>
     /// The content of AI's answer.

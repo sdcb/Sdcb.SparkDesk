@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Sdcb.SparkDesk;
@@ -14,6 +15,11 @@ public readonly record struct ChatResponse
     /// <param name="streamedResponses">An array of <see cref="ChatStreamResponse"/> objects.</param>
     public ChatResponse(IReadOnlyList<StreamedChatResponse> streamedResponses)
     {
+        if (streamedResponses.Count == 0)
+        {
+            throw new ArgumentException("The StreamedResponses array must not be empty.", nameof(streamedResponses));
+        }
+
         StreamedResponses = streamedResponses;
     }
 
@@ -24,10 +30,10 @@ public readonly record struct ChatResponse
     public readonly string Text => string.Concat(StreamedResponses.Select(x => x.Text));
 
     /// <summary>
-    /// Gets the <see cref="TextUsage"/> of the last <see cref="ChatStreamResponse"/> object in the StreamedResponses array.
+    /// Gets the <see cref="TokensUsage"/> of the last <see cref="ChatStreamResponse"/> object in the StreamedResponses array.
     /// </summary>
-    /// <returns>The <see cref="TextUsage"/> of the last <see cref="ChatStreamResponse"/> object.</returns>
-    public readonly TextUsage Usage => StreamedResponses.Last().Usage!;
+    /// <returns>The <see cref="TokensUsage"/> of the last <see cref="ChatStreamResponse"/> object.</returns>
+    public readonly TokensUsage Usage => StreamedResponses[StreamedResponses.Count - 1].Usage!;
 
     /// <summary>
     /// Converts a ChatResponse object to its string representation.

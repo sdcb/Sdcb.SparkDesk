@@ -1,11 +1,11 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Sdcb.SparkDesk;
+namespace Sdcb.SparkDesk.RequestInternals;
 
 /// <summary>
 /// Represents the header which contains app_id and uid.
 /// </summary>
-public class Header
+internal class ChatRequestHeader
 {
     /// <summary>
     /// The application appid, obtained from the open platform control panel.

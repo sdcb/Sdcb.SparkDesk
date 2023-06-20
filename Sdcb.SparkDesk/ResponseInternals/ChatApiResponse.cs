@@ -1,11 +1,11 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Sdcb.SparkDesk;
+namespace Sdcb.SparkDesk.ResponseInternals;
 
 /// <summary>
 /// The main container for the API response.
 /// </summary>
-public class ApiResponse
+internal class ChatApiResponse
 {
     /// <summary>
     /// The header part of the response.

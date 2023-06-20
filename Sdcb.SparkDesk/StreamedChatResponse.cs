@@ -9,7 +9,7 @@ public readonly record struct StreamedChatResponse
 {
     /// <param name="Text">The chat stream response text</param>
     /// <param name="Usage">The text usage enumeration value</param>
-    public StreamedChatResponse(string Text, TextUsage? Usage)
+    public StreamedChatResponse(string Text, TokensUsage? Usage)
     {
         this.Text = Text;
         this.Usage = Usage;
@@ -23,7 +23,7 @@ public readonly record struct StreamedChatResponse
     /// <summary>
     /// The text usage enumeration value
     /// </summary>
-    public TextUsage? Usage { get; }
+    public TokensUsage? Usage { get; }
 
     /// <summary>
     /// Implicit conversion from ChatStreamResponse to string

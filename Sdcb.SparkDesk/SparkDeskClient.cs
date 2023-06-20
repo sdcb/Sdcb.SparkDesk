@@ -9,6 +9,10 @@ using System.Text;
 using System.Threading;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Sdcb.SparkDesk.ResponseInternals;
+using Sdcb.SparkDesk.RequestInternals;
+
+[assembly: InternalsVisibleTo("Sdcb.SparkDesk.Tests")]
 
 namespace Sdcb.SparkDesk;
 
@@ -45,7 +49,7 @@ public class SparkDeskClient
 
         var messageBuffer = new ArraySegment<byte>(JsonSerializer.SerializeToUtf8Bytes(new ChatApiRequest
         {
-            Header = new Header { AppId = _appId, Uid = uid },
+            Header = new ChatRequestHeader { AppId = _appId, Uid = uid },
             Parameter = new Parameters { Chat = parameters ?? new ChatRequestParameters() },
             Payload = new Payload
             {
@@ -62,9 +66,8 @@ public class SparkDeskClient
 
             if (result.MessageType == WebSocketMessageType.Text)
             {
-                ApiResponse? resp = await JsonSerializer.DeserializeAsync<ApiResponse>(new MemoryStream(buffer, 0, result.Count), cancellationToken: cancellationToken);
-                if (resp == null) throw new SparkDeskException($"Can't deserialize response from spark desk API, raw response: {Encoding.UTF8.GetString(buffer, 0, result.Count)}.");
-
+                ChatApiResponse resp = await JsonSerializer.DeserializeAsync<ChatApiResponse>(new MemoryStream(buffer, 0, result.Count), cancellationToken: cancellationToken) 
+                    ?? throw new SparkDeskException($"Can't deserialize response from spark desk API, raw response: {Encoding.UTF8.GetString(buffer, 0, result.Count)}.");
                 if (resp.Header.Code != 0)
                 {
                     throw new SparkDeskException(resp.Header.Code, resp.Header.Sid, resp.Header.Message);

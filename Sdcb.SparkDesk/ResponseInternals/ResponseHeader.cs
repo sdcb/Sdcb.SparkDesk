@@ -1,11 +1,11 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Sdcb.SparkDesk;
+namespace Sdcb.SparkDesk.ResponseInternals;
 
 /// <summary>
 /// Represents the header part of the API response.
 /// </summary>
-public class ResponseHeader
+internal class ResponseHeader
 {
     /// <summary>
     /// Error code, 0 means normal, non-0 means error.
