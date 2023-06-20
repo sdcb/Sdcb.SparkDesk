@@ -2,8 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net6</TargetFrameworks>
-    <Description>An unofficial open-source project that provides a .NET client for the SparkDesk WebSocket API(https://console.xfyun.cn/services/cbm).
-讯飞星火大模型WebSocket API的非官方.NET开源客户端。</Description>
+    <Description>.NET client for the SparkDesk "Xinghuo" API/讯飞星火大模型API的.NET SDK。</Description>
     <Copyright>MIT</Copyright>
     <PackageIcon>spark-icon.png</PackageIcon>
     <LangVersion>11</LangVersion>
