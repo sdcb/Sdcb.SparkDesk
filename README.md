@@ -35,11 +35,8 @@ The following example shows how to use the `ChatAsync` method to chat with a vir
 SparkDeskClient client = CreateSparkDeskClient();
 ChatResponse response = await client.ChatAsync(new ChatMessage[] 
 {
-    ChatMessage.FromUser("Hello"),
-    ChatMessage.FromAssistant("Hi there! How can I help you today?"),
-    ChatMessage.FromUser("I need some help with my account"),
-    ChatMessage.FromAssistant("Sure thing! What's your account number?"),
-    ChatMessage.FromUser("123456"),
+    ChatMessage.FromUser("系统提示：你叫张三，一名5岁男孩，你在金色摇篮幼儿园上学，你的妈妈叫李四，是一名工程师"),
+    ChatMessage.FromUser("你好小朋友，我是周老师，你在上学？"),
 });
 Console.WriteLine(response.Text);
 ```
