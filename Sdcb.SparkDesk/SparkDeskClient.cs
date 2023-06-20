@@ -20,19 +20,19 @@ public class SparkDeskClient
 
     public SparkDeskClient(string appId, string apiKey, string apiSecret)
     {
-        _appId = appId;
-        _apiKey = apiKey;
-        _apiSecret = apiSecret;
+        _appId = appId ?? throw new ArgumentNullException(nameof(appId));
+        _apiKey = apiKey ?? throw new ArgumentNullException(nameof(apiKey));
+        _apiSecret = apiSecret ?? throw new ArgumentNullException(nameof(apiSecret));
     }
 
-    public async IAsyncEnumerable<string> ChatAsync(ChatRequestParameters parameters, ChatMessage[] messages, string? uid = null, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    public async IAsyncEnumerable<ChatSingleResponse> ChatAsync(ChatMessage[] messages, ChatRequestParameters? parameters = null, string? uid = null, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        string authUrl = GetAuthorizationUrl(HostUrl, _apiKey, _apiSecret);
+        string authUrl = GetAuthorizationUrl(_apiKey, _apiSecret, HostUrl);
 
-        await foreach (string item in WebSocketConnection(new ChatApiRequest
+        await foreach (ChatSingleResponse item in WebSocketConnection(new ChatApiRequest
         {
             Header = new Header { AppId = _appId, Uid = uid },
-            Parameter = new Parameters { Chat = parameters },
+            Parameter = new Parameters { Chat = parameters ?? new ChatRequestParameters() },
             Payload = new Payload
             {
                 Message = new Message { Text = messages }
@@ -63,7 +63,7 @@ public class SparkDeskClient
         return new UriBuilder(url) { Scheme = url.Scheme, Query = query }.ToString();
     }
 
-    private static async IAsyncEnumerable<string> WebSocketConnection(ChatApiRequest request, string url, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    private static async IAsyncEnumerable<ChatSingleResponse> WebSocketConnection(ChatApiRequest request, string url, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         using ClientWebSocket webSocket = new();
         Uri uri = new(url);
@@ -73,8 +73,7 @@ public class SparkDeskClient
         var messageBuffer = new ArraySegment<byte>(JsonSerializer.SerializeToUtf8Bytes(request));
         await webSocket.SendAsync(messageBuffer, WebSocketMessageType.Text, true, cancellationToken).ConfigureAwait(false);
 
-        byte[] buffer = new byte[65536];
-
+        byte[] buffer = new byte[4096];
         do
         {
             ArraySegment<byte> arraySegment = new(buffer);
@@ -82,10 +81,15 @@ public class SparkDeskClient
 
             if (result.MessageType == WebSocketMessageType.Text)
             {
-                ApiResponse? resp = (await JsonSerializer.DeserializeAsync<ApiResponse>(new MemoryStream(buffer, 0, result.Count), cancellationToken: cancellationToken));
-                if (resp == null) break;
+                ApiResponse? resp = await JsonSerializer.DeserializeAsync<ApiResponse>(new MemoryStream(buffer, 0, result.Count), cancellationToken: cancellationToken);
+                if (resp == null) throw new SparkDeskException($"Can't deserialize response from spark desk API, raw response: {Encoding.UTF8.GetString(buffer, 0, result.Count)}.");
 
-                yield return string.Concat(resp.Payload!.Choices.Text.Select(x => x.Content));
+                if (resp.Header.Code != 0)
+                {
+                    throw new SparkDeskException(resp.Header.Code, resp.Header.Sid, resp.Header.Message);
+                }
+
+                yield return new ChatSingleResponse(string.Concat(resp.Payload!.Choices.Text.Select(x => x.Content)), resp.Payload.Usage?.Text);
 
                 if (resp.Header.Status == 2)
                 {
@@ -100,7 +104,7 @@ public class SparkDeskClient
 
         if (webSocket.State == WebSocketState.Open)
         {
-            await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "客户端主动断开链接", cancellationToken);
+            await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Client request disconnect.", cancellationToken);
         }
     }
 }

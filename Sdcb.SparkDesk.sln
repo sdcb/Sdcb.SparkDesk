@@ -5,6 +5,8 @@ VisualStudioVersion = 17.6.33801.468
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sdcb.SparkDesk", "Sdcb.SparkDesk\Sdcb.SparkDesk.csproj", "{163748C6-9A59-4A5E-91DB-4C496739FB22}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sdcb.SparkDesk.Tests", "Sdcb.SparkDesk.Tests\Sdcb.SparkDesk.Tests.csproj", "{562B9DF9-6D34-4910-A759-15E05014074C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{163748C6-9A59-4A5E-91DB-4C496739FB22}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{163748C6-9A59-4A5E-91DB-4C496739FB22}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{163748C6-9A59-4A5E-91DB-4C496739FB22}.Release|Any CPU.Build.0 = Release|Any CPU
+		{562B9DF9-6D34-4910-A759-15E05014074C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{562B9DF9-6D34-4910-A759-15E05014074C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{562B9DF9-6D34-4910-A759-15E05014074C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{562B9DF9-6D34-4910-A759-15E05014074C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
