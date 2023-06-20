@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net6</TargetFrameworks>
+    <Description>Unofficial Xunfei's "Xinghuo" SparkDesk big model sdk for .NET</Description>
+    <Copyright>MIT</Copyright>
+    <PackageIcon>spark-icon.png</PackageIcon>
+    <LangVersion>11</LangVersion>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\build\spark-icon.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="PolySharp" Version="1.13.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="System.Text.Json" Version="7.0.3" Condition="'$(TargetFramework)' == 'netstandard2.0'"/>
+  </ItemGroup>
+
+</Project>
