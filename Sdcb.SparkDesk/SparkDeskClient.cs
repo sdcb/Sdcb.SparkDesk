@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.Text;
 using System.Threading;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace Sdcb.SparkDesk;
 
@@ -25,11 +26,24 @@ public class SparkDeskClient
         _apiSecret = apiSecret ?? throw new ArgumentNullException(nameof(apiSecret));
     }
 
-    public async IAsyncEnumerable<ChatSingleResponse> ChatAsync(ChatMessage[] messages, ChatRequestParameters? parameters = null, string? uid = null, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    public async Task<ChatResponse> ChatAsync(ChatMessage[] messages, ChatRequestParameters? parameters = null, string? uid = null, CancellationToken cancellationToken = default)
     {
-        string authUrl = GetAuthorizationUrl(_apiKey, _apiSecret, HostUrl);
+        List<StreamedChatResponse> resps = new();
+        await foreach (StreamedChatResponse msg in ChatAsStreamAsync(messages, parameters, uid, cancellationToken))
+        {
+            resps.Add(msg);
+        }
 
-        await foreach (ChatSingleResponse item in WebSocketConnection(new ChatApiRequest
+        return new ChatResponse(resps);
+    }
+
+    public async IAsyncEnumerable<StreamedChatResponse> ChatAsStreamAsync(ChatMessage[] messages, ChatRequestParameters? parameters = null, string? uid = null, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    {
+        using ClientWebSocket webSocket = new();
+
+        await webSocket.ConnectAsync(new Uri(GetAuthorizationUrl(_apiKey, _apiSecret, HostUrl)), cancellationToken);
+
+        var messageBuffer = new ArraySegment<byte>(JsonSerializer.SerializeToUtf8Bytes(new ChatApiRequest
         {
             Header = new Header { AppId = _appId, Uid = uid },
             Parameter = new Parameters { Chat = parameters ?? new ChatRequestParameters() },
@@ -37,9 +51,41 @@ public class SparkDeskClient
             {
                 Message = new Message { Text = messages }
             },
-        }, authUrl, cancellationToken))
+        }));
+        await webSocket.SendAsync(messageBuffer, WebSocketMessageType.Text, true, cancellationToken);
+
+        byte[] buffer = new byte[4096];
+        do
         {
-            yield return item;
+            ArraySegment<byte> arraySegment = new(buffer);
+            WebSocketReceiveResult result = await webSocket.ReceiveAsync(arraySegment, cancellationToken);
+
+            if (result.MessageType == WebSocketMessageType.Text)
+            {
+                ApiResponse? resp = await JsonSerializer.DeserializeAsync<ApiResponse>(new MemoryStream(buffer, 0, result.Count), cancellationToken: cancellationToken);
+                if (resp == null) throw new SparkDeskException($"Can't deserialize response from spark desk API, raw response: {Encoding.UTF8.GetString(buffer, 0, result.Count)}.");
+
+                if (resp.Header.Code != 0)
+                {
+                    throw new SparkDeskException(resp.Header.Code, resp.Header.Sid, resp.Header.Message);
+                }
+
+                yield return new StreamedChatResponse(string.Concat(resp.Payload!.Choices.Text.Select(x => x.Content)), resp.Payload.Usage?.Text);
+
+                if (resp.Header.Status == 2)
+                {
+                    break;
+                }
+            }
+            else
+            {
+                throw new SparkDeskException($"Unexpected websocket message type: \"{result.MessageType}\", expect \"text\".");
+            }
+        } while (!cancellationToken.IsCancellationRequested);
+
+        if (webSocket.State == WebSocketState.Open)
+        {
+            await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Client request disconnect.", cancellationToken);
         }
     }
 
@@ -61,50 +107,5 @@ public class SparkDeskClient
         string query = $"authorization={authorization}&date={dateString}&host={url.Host}";
 
         return new UriBuilder(url) { Scheme = url.Scheme, Query = query }.ToString();
-    }
-
-    private static async IAsyncEnumerable<ChatSingleResponse> WebSocketConnection(ChatApiRequest request, string url, [EnumeratorCancellation] CancellationToken cancellationToken = default)
-    {
-        using ClientWebSocket webSocket = new();
-        Uri uri = new(url);
-
-        await webSocket.ConnectAsync(uri, cancellationToken).ConfigureAwait(false);
-
-        var messageBuffer = new ArraySegment<byte>(JsonSerializer.SerializeToUtf8Bytes(request));
-        await webSocket.SendAsync(messageBuffer, WebSocketMessageType.Text, true, cancellationToken).ConfigureAwait(false);
-
-        byte[] buffer = new byte[4096];
-        do
-        {
-            ArraySegment<byte> arraySegment = new(buffer);
-            WebSocketReceiveResult result = await webSocket.ReceiveAsync(arraySegment, cancellationToken).ConfigureAwait(false);
-
-            if (result.MessageType == WebSocketMessageType.Text)
-            {
-                ApiResponse? resp = await JsonSerializer.DeserializeAsync<ApiResponse>(new MemoryStream(buffer, 0, result.Count), cancellationToken: cancellationToken);
-                if (resp == null) throw new SparkDeskException($"Can't deserialize response from spark desk API, raw response: {Encoding.UTF8.GetString(buffer, 0, result.Count)}.");
-
-                if (resp.Header.Code != 0)
-                {
-                    throw new SparkDeskException(resp.Header.Code, resp.Header.Sid, resp.Header.Message);
-                }
-
-                yield return new ChatSingleResponse(string.Concat(resp.Payload!.Choices.Text.Select(x => x.Content)), resp.Payload.Usage?.Text);
-
-                if (resp.Header.Status == 2)
-                {
-                    break;
-                }
-            }
-            else
-            {
-                throw new SparkDeskException($"Unexpected websocket message type: \"{result.MessageType}\", expect \"text\".");
-            }
-        } while (!cancellationToken.IsCancellationRequested);
-
-        if (webSocket.State == WebSocketState.Open)
-        {
-            await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Client request disconnect.", cancellationToken);
-        }
     }
 }

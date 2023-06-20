@@ -1,0 +1,48 @@
+﻿using System.Collections.Generic;
+using System.Linq;
+
+namespace Sdcb.SparkDesk;
+
+/// <summary>
+/// Represents ChatResponse object that contains an array of <see cref="ChatStreamResponse"/> objects.
+/// </summary>
+public readonly record struct ChatResponse
+{
+    /// <summary>
+    /// Initializes a new instance of the ChatResponse class with an array of <see cref="ChatStreamResponse"/> objects.
+    /// </summary>
+    /// <param name="streamedResponses">An array of <see cref="ChatStreamResponse"/> objects.</param>
+    public ChatResponse(IReadOnlyList<StreamedChatResponse> streamedResponses)
+    {
+        StreamedResponses = streamedResponses;
+    }
+
+    /// <summary>
+    /// Gets the concatenated text of all <see cref="ChatStreamResponse"/> objects in the <see cref="StreamedResponses"/> array.
+    /// </summary>
+    /// <returns>The concatenated text of all <see cref="ChatStreamResponse"/> objects.</returns>
+    public readonly string Text => string.Concat(StreamedResponses.Select(x => x.Text));
+
+    /// <summary>
+    /// Gets the <see cref="TextUsage"/> of the last <see cref="ChatStreamResponse"/> object in the StreamedResponses array.
+    /// </summary>
+    /// <returns>The <see cref="TextUsage"/> of the last <see cref="ChatStreamResponse"/> object.</returns>
+    public readonly TextUsage Usage => StreamedResponses.Last().Usage!;
+
+    /// <summary>
+    /// Converts a ChatResponse object to its string representation.
+    /// </summary>
+    /// <param name="r">The ChatResponse object to convert.</param>
+    public static implicit operator string(ChatResponse r) => r.Text;
+
+    /// <summary>
+    /// Returns the concatenated text of all <see cref="ChatStreamResponse"/> objects in the StreamedResponses array.
+    /// </summary>
+    /// <returns>The concatenated text of all <see cref="ChatStreamResponse"/> objects.</returns>
+    public override readonly string ToString() => Text;
+
+    /// <summary>
+    /// Gets an array of <see cref="ChatStreamResponse"/> objects.
+    /// </summary>
+    public readonly IReadOnlyList<StreamedChatResponse> StreamedResponses { get; }
+}
