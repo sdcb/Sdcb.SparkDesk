@@ -16,6 +16,9 @@ using Sdcb.SparkDesk.RequestInternals;
 
 namespace Sdcb.SparkDesk;
 
+/// <summary>
+/// Represents a client for interacting with the SparkDesk API.
+/// </summary>
 public class SparkDeskClient
 {
     private const string HostUrl = "wss://spark-api.xf-yun.com/v1.1/chat";
@@ -23,6 +26,12 @@ public class SparkDeskClient
     private readonly string _apiKey;
     private readonly string _apiSecret;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SparkDeskClient"/> class with specified parameters.
+    /// </summary>
+    /// <param name="appId">The app ID.</param>
+    /// <param name="apiKey">The API key.</param>
+    /// <param name="apiSecret">The API Secret.</param>
     public SparkDeskClient(string appId, string apiKey, string apiSecret)
     {
         _appId = appId ?? throw new ArgumentNullException(nameof(appId));
@@ -30,6 +39,14 @@ public class SparkDeskClient
         _apiSecret = apiSecret ?? throw new ArgumentNullException(nameof(apiSecret));
     }
 
+    /// <summary>
+    /// Sends chat messages to SparkDesk API through websockets and receives response streams asynchronously.
+    /// </summary>
+    /// <param name="messages">Array of chat messages to send to SparkDesk API.</param>
+    /// <param name="parameters">Optional parameters to modify chat request.</param>
+    /// <param name="uid">Optional user ID to associate with the chat messages.</param>
+    /// <param name="cancellationToken">Optional cancellation token to stop the operation.</param>
+    /// <returns>Asynchronous task that returns a ChatResponse object containing the streamed chat response.</returns>
     public async Task<ChatResponse> ChatAsync(ChatMessage[] messages, ChatRequestParameters? parameters = null, string? uid = null, CancellationToken cancellationToken = default)
     {
         List<StreamedChatResponse> resps = new();
@@ -41,6 +58,14 @@ public class SparkDeskClient
         return new ChatResponse(resps);
     }
 
+    /// <summary>
+    /// Sends chat messages to SparkDesk API through websockets and receives response streams asynchronously.
+    /// </summary>
+    /// <param name="messages">Array of chat messages to send to SparkDesk API.</param>
+    /// <param name="parameters">Optional parameters to modify chat request.</param>
+    /// <param name="uid">Optional user ID to associate with the chat messages.</param>
+    /// <param name="cancellationToken">Optional cancellation token to stop the operation.</param>
+    /// <returns>Asynchronous stream of responses from SparkDesk API.</returns>
     public async IAsyncEnumerable<StreamedChatResponse> ChatAsStreamAsync(ChatMessage[] messages, ChatRequestParameters? parameters = null, string? uid = null, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         using ClientWebSocket webSocket = new();
@@ -66,7 +91,7 @@ public class SparkDeskClient
 
             if (result.MessageType == WebSocketMessageType.Text)
             {
-                ChatApiResponse resp = await JsonSerializer.DeserializeAsync<ChatApiResponse>(new MemoryStream(buffer, 0, result.Count), cancellationToken: cancellationToken) 
+                ChatApiResponse resp = await JsonSerializer.DeserializeAsync<ChatApiResponse>(new MemoryStream(buffer, 0, result.Count), cancellationToken: cancellationToken)
                     ?? throw new SparkDeskException($"Can't deserialize response from spark desk API, raw response: {Encoding.UTF8.GetString(buffer, 0, result.Count)}.");
                 if (resp.Header.Code != 0)
                 {
@@ -92,6 +117,13 @@ public class SparkDeskClient
         }
     }
 
+    /// <summary>
+    /// Generates authorization URL for SparkDesk API.
+    /// </summary>
+    /// <param name="apiKey">SparkDesk API key.</param>
+    /// <param name="apiSecret">SparkDesk API secret.</param>
+    /// <param name="hostUrl">Host URL. Optional, default is value from const field.</param>
+    /// <returns>Authorization URL.</returns>
     public static string GetAuthorizationUrl(string apiKey, string apiSecret, string hostUrl = HostUrl)
     {
         var url = new Uri(hostUrl);

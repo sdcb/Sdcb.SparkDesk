@@ -19,6 +19,17 @@ public class ChatMessage
     [JsonPropertyName("content")]
     public required string Content { get; set; }
 
-    public static ChatMessage FromUser(string message) => new() { Role = "user", Content = message };
-    public static ChatMessage FromAssistant(string message) => new() { Role = "assistant", Content = message };
+    /// <summary>
+    /// Creates a new <see cref="ChatMessage"/> instance for a user with the specified message content.
+    /// </summary>
+    /// <param name="content">The text content of the user's message.</param>
+    /// <returns>A new <see cref="ChatMessage"/> instance representing the user's message.</returns>
+    public static ChatMessage FromUser(string content) => new() { Role = "user", Content = content };
+
+    /// <summary>
+    /// Creates a new  <see cref="ChatMessage"/> instance for an AI assistant with the specified message content.
+    /// </summary>
+    /// <param name="content">The text content of the AI assistant's message.</param>
+    /// <returns>A new <see cref="ChatMessage"/> instance representing the AI assistant's message.</returns>
+    public static ChatMessage FromAssistant(string content) => new() { Role = "assistant", Content = content };
 }
