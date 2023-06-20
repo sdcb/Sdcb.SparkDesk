@@ -79,6 +79,36 @@ string realResponse = sb.ToString();
 Console.WriteLine(realResponse);
 ```
 
+### Example 4: A console chatting bot using streaming API:
+
+The following example shows how to self tracking the conversation history and chat with a virtual assistant using streaming API:
+
+```csharp
+SparkDeskClient client = new SparkDeskClient(appId, apiKey, apiSecret);
+
+List<ChatMessage> conversation = new List<ChatMessage>();
+while (true)
+{
+	string? prompt = Console.ReadLine();
+	if (prompt == null || prompt == "q")
+	{
+		break;
+	}
+
+	conversation.Add(ChatMessage.FromUser(prompt));
+	Console.WriteLine($"> {prompt}");
+	
+	StringBuilder resp = new StringBuilder();
+	await foreach (string c in client.ChatAsStreamAsync(conversation.ToArray()))
+	{
+		resp.Append(resp);
+		Console.Write(c);
+	}
+	Console.WriteLine();
+	conversation.Add(ChatMessage.FromAssistant(resp.ToString()));
+}
+```
+
 ## License
 
 Sdcb.SparkDesk is licensed under the MIT License. See the [LICENSE.txt](LICENSE.txt) file for more information.
