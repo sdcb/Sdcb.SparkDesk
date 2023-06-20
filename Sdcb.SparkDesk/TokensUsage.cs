@@ -5,7 +5,7 @@ namespace Sdcb.SparkDesk;
 /// <summary>
 /// Represents the usage part of the API payload (returned in the last result).
 /// </summary>
-public class TokensUsage
+public record TokensUsage
 {
     /// <summary>
     /// Reserved field, can be ignored.

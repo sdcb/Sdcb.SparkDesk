@@ -11,6 +11,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Sdcb.SparkDesk.ResponseInternals;
 using Sdcb.SparkDesk.RequestInternals;
+using System.Collections;
 
 [assembly: InternalsVisibleTo("Sdcb.SparkDesk.Tests")]
 
@@ -40,13 +41,35 @@ public class SparkDeskClient
     }
 
     /// <summary>
+    /// Sends messages to the backend and returns the response via callback. 
+    /// Concatenate the string in the <paramref name="chatCallback"/> to get the whole response message.
+    /// </summary>
+    /// <param name="messages">The messages to send.</param>
+    /// <param name="chatCallback">The callback to receive the response.</param>
+    /// <param name="parameters">Optional parameters for the request.</param>
+    /// <param name="uid">Optional uid for the request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The usage of the tokens.</returns>
+    public async Task<TokensUsage> ChatAsStreamAsync(ChatMessage[] messages, Action<string> chatCallback, ChatRequestParameters? parameters = null, string? uid = null, CancellationToken cancellationToken = default)
+    {
+        TokensUsage? usage = null;
+        await foreach (StreamedChatResponse msg in ChatAsStreamAsync(messages, parameters, uid, cancellationToken))
+        {
+            chatCallback(msg.Text);
+            usage ??= msg.Usage;
+        }
+
+        return usage!;
+    }
+
+    /// <summary>
     /// Sends chat messages to SparkDesk API through websockets and receives response streams asynchronously.
     /// </summary>
     /// <param name="messages">Array of chat messages to send to SparkDesk API.</param>
     /// <param name="parameters">Optional parameters to modify chat request.</param>
     /// <param name="uid">Optional user ID to associate with the chat messages.</param>
     /// <param name="cancellationToken">Optional cancellation token to stop the operation.</param>
-    /// <returns>Asynchronous task that returns a ChatResponse object containing the streamed chat response.</returns>
+    /// <returns>Asynchronous task that returns a <see cref="ChatResponse"/> object containing the streamed chat response.</returns>
     public async Task<ChatResponse> ChatAsync(ChatMessage[] messages, ChatRequestParameters? parameters = null, string? uid = null, CancellationToken cancellationToken = default)
     {
         List<StreamedChatResponse> resps = new();
