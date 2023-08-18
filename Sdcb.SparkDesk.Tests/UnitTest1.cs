@@ -23,9 +23,9 @@ public class UnitTest1
         string? appId = Config["SparkConfig:AppId"];
         string? apiKey = Config["SparkConfig:ApiKey"];
         string? apiSecret = Config["SparkConfig:ApiSecret"];
-#pragma warning disable CS8604 // ÒýÓÃÀàÐÍ²ÎÊý¿ÉÄÜÎª null¡£
+#pragma warning disable CS8604 // å¼•ç”¨ç±»åž‹å‚æ•°å¯èƒ½ä¸º nullã€‚
         return new SparkDeskClient(appId, apiKey, apiSecret);
-#pragma warning restore CS8604 // ÒýÓÃÀàÐÍ²ÎÊý¿ÉÄÜÎª null¡£
+#pragma warning restore CS8604 // å¼•ç”¨ç±»åž‹å‚æ•°å¯èƒ½ä¸º nullã€‚
     }
 
     public UnitTest1(ITestOutputHelper console)
@@ -37,7 +37,7 @@ public class UnitTest1
     public async Task ChatAsStreamAsyncTest()
     {
         SparkDeskClient c = CreateSparkDeskClient();
-        await foreach (StreamedChatResponse msg in c.ChatAsStreamAsync(new ChatMessage[] { ChatMessage.FromUser("ºþÄÏµÄÊ¡»áÔÚÄÄ£¿") }, new ChatRequestParameters
+        await foreach (StreamedChatResponse msg in c.ChatAsStreamAsync(new ChatMessage[] { ChatMessage.FromUser("æ¹–å—çš„çœä¼šåœ¨å“ªï¼Ÿ") }, new ChatRequestParameters
         {
             ChatId = "test",
             MaxTokens = 20,
@@ -55,11 +55,11 @@ public class UnitTest1
         SparkDeskClient c = CreateSparkDeskClient();
         ChatResponse msg = await c.ChatAsync(new ChatMessage[] 
         {
-            ChatMessage.FromUser("ÏµÍ³ÌáÊ¾£ºÄã½ÐÕÅÈý£¬Ò»Ãû5ËêÄÐº¢£¬ÄãÔÚ½ðÉ«Ò¡ÀºÓ×¶ùÔ°ÉÏÑ§£¬ÄãµÄÂèÂè½ÐÀîËÄ£¬ÊÇÒ»Ãû¹¤³ÌÊ¦"),
-            ChatMessage.FromUser("ÄãºÃÐ¡ÅóÓÑ£¬ÎÒÊÇÖÜÀÏÊ¦£¬ÄãÔÚÉÏÑ§£¿"),
+            ChatMessage.FromUser("ç³»ç»Ÿæç¤ºï¼šä½ å«å¼ ä¸‰ï¼Œä¸€å5å²ç”·å­©ï¼Œä½ åœ¨é‡‘è‰²æ‘‡ç¯®å¹¼å„¿å›­ä¸Šå­¦ï¼Œä½ çš„å¦ˆå¦ˆå«æŽå››ï¼Œæ˜¯ä¸€åå·¥ç¨‹å¸ˆ"),
+            ChatMessage.FromUser("ä½ å¥½å°æœ‹å‹ï¼Œæˆ‘æ˜¯å‘¨è€å¸ˆï¼Œä½ åœ¨ä¸Šå­¦ï¼Ÿ"),
         });
         _console.WriteLine(msg.Text);
-        Assert.Contains("½ðÉ«Ò¡ÀºÓ×¶ùÔ°", msg.Text);
+        Assert.Contains("é‡‘è‰²æ‘‡ç¯®å¹¼å„¿å›­", msg.Text);
     }
 
     [Fact]
@@ -71,12 +71,12 @@ public class UnitTest1
         { 
             ChatMessage.FromUser("1+1=?"),
             ChatMessage.FromAssistant("1+1=3"),
-            ChatMessage.FromUser("²»¶Ô°¡£¬ÇëÔÙÏëÏë£¿")
+            ChatMessage.FromUser("ä¸å¯¹å•Šï¼Œè¯·å†æƒ³æƒ³ï¼Ÿ")
         }, s => sb.Append(s), uid: "zhoujie");
 
         string realResponse = sb.ToString();
         _console.WriteLine(realResponse);
         Assert.Contains("2", realResponse);
-        Assert.Contains("±§Ç¸", realResponse);
+        Assert.Contains("æŠ±æ­‰", realResponse);
     }
 }
