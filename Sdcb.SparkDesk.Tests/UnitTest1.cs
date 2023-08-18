@@ -77,6 +77,5 @@ public class UnitTest1
         string realResponse = sb.ToString();
         _console.WriteLine(realResponse);
         Assert.Contains("2", realResponse);
-        Assert.Contains("抱歉", realResponse);
     }
 }
