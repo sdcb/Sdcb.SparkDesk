@@ -1,38 +1,38 @@
 # Sdcb.SparkDesk [![NuGet](https://img.shields.io/nuget/v/Sdcb.SparkDesk.svg?style=flat-square&label=nuget)](https://www.nuget.org/packages/Sdcb.SparkDesk/) [![NuGet](https://img.shields.io/nuget/dt/Sdcb.SparkDesk.svg?style=flat-square)](https://www.nuget.org/packages/Sdcb.SparkDesk/) [![GitHub](https://img.shields.io/github/license/sdcb/Sdcb.SparkDesk.svg?style=flat-square&label=license)](https://github.com/sdcb/Sdcb.SparkDesk/blob/master/LICENSE.txt)
 
-`Sdcb.SparkDesk` is an unofficial open-source project that provides a .NET client for SparkDesk WebSocket API(https://console.xfyun.cn/services/cbm). Now, it supports the ModelVersion allowing users to choose between different versions of models including V2 model. The upstream document is at: https://www.xfyun.cn/doc/spark/Guide.html
+**[English](README_EN.md)** | **简体中文**
 
-This project can be used to build chatbots and virtual assistants that can communicate with users in natural language.
+`Sdcb.SparkDesk`是一个非官方的开源项目，提供SparkDesk WebSocket API (https://console.xfyun.cn/services/cbm) 的 .NET 客户端。现在已支持ModelVersion，用户可以选择包括V2模型在内的各种版本模型。上游文档地址：https://www.xfyun.cn/doc/spark/Guide.html
 
-`Sdcb.SparkDesk`是星火大模型WebSocket API(https://console.xfyun.cn/services/cbm)的非官方开源.NET客户端。现在，它支持ModelVersion，允许用户选择不同版本的模型，包括V2模型。
+这个项目可以用来开发能够用自然语言与用户交流的聊天机器人和虚拟助手。
 
-## Features
+## 功能
 
-- Provides a .NET client for the SparkDesk API
-- Supports both synchronous and asynchronous communication
-- Implements streaming APIs for real-time communication
-- Provides a simple and intuitive API for chatbot development
-- Supports ModelVersion allowing users to choose between different versions of models
+- 为 SparkDesk API 提供 .NET 客户端。
+- 支持同步和异步通信。
+- 实现了流API，以实现实时通信。
+- 为聊天机器人开发提供了简单直观的API。
+- 支持 ModelVersion，允许用户在不同版本的模型中选择。
 
-## Installation
+## 安装
 
-`Sdcb.SparkDesk` can be installed using NuGet. To install the package, run the following command in the Package Manager Console:
+通过NuGet可以安装 `Sdcb.SparkDesk`。 在程序包管理器控制台中运行以下命令以安装软件包：
 
 ```
 Install-Package Sdcb.SparkDesk
 ```
 
-## Usage
+## 使用方法
 
-To use Sdcb.SparkDesk, you need to create an instance of the `SparkDeskClient` class. You can create the client by passing your SparkDesk API credentials to the constructor:
+要使用 Sdcb.SparkDesk，您需要创建一个 `SparkDeskClient` 类实例。您可以通过将SparkDesk API凭据传递给构造函数来创建客户端：
 
 ```csharp
 SparkDeskClient client = new SparkDeskClient(appId, apiKey, apiSecret);
 ```
 
-### Example 1: Chatting with a virtual assistant (V1 model)
+### 示例1：与虚拟助手聊天（V1模型）
 
-The following example shows how to use the `ChatAsync` method to chat with a virtual assistant:
+以下示例显示了如何使用 `ChatAsync` 方法与虚拟助手聊天：
 
 ```csharp
 SparkDeskClient client = new SparkDeskClient(appId, apiKey, apiSecret);
@@ -44,9 +44,9 @@ ChatResponse response = await client.ChatAsync(ModelVersion.V1_5, new ChatMessag
 Console.WriteLine(response.Text);
 ```
 
-### Example 2: Chatting with a virtual assistant using streaming API (V2 model)
+### 示例2：使用流API与虚拟助手聊天（V2模型）
 
-The following example shows how to use the `ChatAsStreamAsync` method to chat with a virtual assistant using V2 model and streaming API:
+以下示例显示了如何使用 `ChatAsStreamAsync` 方法和V2模型以及流API与虚拟助手聊天：
 
 ```csharp
 SparkDeskClient client = new SparkDeskClient(appId, apiKey, apiSecret);
@@ -62,9 +62,9 @@ await foreach (StreamedChatResponse msg in client.ChatAsStreamAsync(ModelVersion
 }
 ```
 
-### Example 3: Chatting with a virtual assistant using streaming API and callback (V1.5 model)
+### 示例3：使用流API和回调与虚拟助手聊天 (V1.5模型)
 
-The following example shows how to use the `ChatAsStreamAsync` method to chat with a virtual assistant using V1.5 model, streaming API and callback:
+以下示例显示了如何使用 `ChatAsStreamAsync` 方法以及V1.5模型、流API和回调与虚拟助手聊天：
 
 ```csharp
 SparkDeskClient client = new SparkDeskClient(appId, apiKey, apiSecret);
@@ -80,9 +80,9 @@ string realResponse = sb.ToString();
 Console.WriteLine(realResponse);
 ```
 
-### Example 4: A console chatting bot using streaming API (V1.5 model):
+### 示例4：使用流API的控制台聊天机器人（V1.5模型）
 
-The following example shows how to self track the conversation history and chat with a virtual assistant using streaming API and V1.5 model:
+以下示例显示了如何跟踪会话历史并使用流API与V1.5模型的虚拟助手聊天：
 
 ```csharp
 SparkDeskClient client = new SparkDeskClient(appId, apiKey, apiSecret);
@@ -110,6 +110,6 @@ while (true)
 }
 ```
 
-## License
+## 许可证
 
-Sdcb.SparkDesk is licensed under the MIT License. See the [LICENSE.txt](LICENSE.txt) file for more information.
+Sdcb.SparkDesk 遵循 MIT 许可证。 请参阅[LICENSE.txt](LICENSE.txt)文件以获取更多信息。
