@@ -1,4 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 
 namespace Sdcb.SparkDesk;
 
@@ -7,12 +9,6 @@ namespace Sdcb.SparkDesk;
 /// </summary>
 public class ChatRequestParameters
 {
-    /// <summary>
-    /// Specifies the domain to access, must be set to "general".
-    /// </summary>
-    [JsonPropertyName("domain")]
-    public string Domain { get; set; } = "general";
-
     /// <summary>
     /// Determines the randomness of the result. The higher the value, the higher the randomness, and the more likely the same question will get different answers. Range: [0,1], default: 0.5
     /// </summary>
@@ -36,4 +32,58 @@ public class ChatRequestParameters
     /// </summary>
     [JsonPropertyName("chat_id")]
     public string? ChatId { get; set; }
+}
+
+/// <summary>
+/// Represents the chat property for chat parameters.
+/// </summary>
+internal class ChatRequestParametersInternal : ChatRequestParameters
+{
+    public ChatRequestParametersInternal()
+    {
+    }
+
+    [SetsRequiredMembers]
+    public ChatRequestParametersInternal(ModelVersion version, ChatRequestParameters? req = null)
+    {
+        if (req != null)
+        {
+            Temperature = req.Temperature;
+            MaxTokens = req.MaxTokens;
+            TopK = req.TopK;
+            ChatId = req.ChatId;
+        }
+        
+        Domain = version switch
+        {
+            ModelVersion.V1_5 => "general",
+            ModelVersion.V2 => "generalv2",
+            _ => throw new ArgumentOutOfRangeException(nameof(version), version, null),
+        };
+    }
+
+    /// <summary>
+    /// Specify the model version: 'general': v1.5, 'generalv2': v2.
+    /// </summary>
+    /// <remarks>
+    /// Note: Different values correspond to different URLs!
+    /// </remarks>
+    [JsonPropertyName("domain")]
+    public required string Domain { get; set; }
+}
+
+/// <summary>
+/// Model versions for Spark Desk Large Model.
+/// </summary>
+public enum ModelVersion
+{
+    /// <summary>
+    /// v1.5 version
+    /// </summary>
+    V1_5,
+
+    /// <summary>
+    /// v2 version
+    /// </summary>
+    V2,
 }

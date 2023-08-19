@@ -11,5 +11,5 @@ internal class Parameters
     /// Contains chat-related properties such as domain, temperature, max tokens, and so on.
     /// </summary>
     [JsonPropertyName("chat")]
-    public ChatRequestParameters Chat { get; set; } = new ChatRequestParameters();
+    public required ChatRequestParametersInternal Chat { get; set; }
 }

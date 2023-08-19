@@ -4,7 +4,7 @@
 
 It can be used to build chatbots and virtual assistants that can communicate with users in natural language.
 
-`Sdcb.SparkDesk`ÊÇÑ¶·ÉÐÇ»ð´óÄ£ÐÍWebSocket APIµÄ·Ç¹Ù·½.NET¿ªÔ´¿Í»§¶Ë(https://console.xfyun.cn/services/cbm)¡£
+`Sdcb.SparkDesk`æ˜¯è®¯é£žæ˜Ÿç«å¤§æ¨¡åž‹WebSocket APIçš„éžå®˜æ–¹.NETå¼€æºå®¢æˆ·ç«¯(https://console.xfyun.cn/services/cbm)ã€‚
 
 ## Features
 
@@ -37,8 +37,8 @@ The following example shows how to use the `ChatAsync` method to chat with a vir
 SparkDeskClient client = new SparkDeskClient(appId, apiKey, apiSecret);
 ChatResponse response = await client.ChatAsync(new ChatMessage[] 
 {
-    ChatMessage.FromUser("ÏµÍ³ÌáÊ¾£ºÄã½ÐÕÅÈý£¬Ò»Ãû5ËêÄÐº¢£¬ÄãÔÚ½ðÉ«Ò¡ÀºÓ×¶ùÔ°ÉÏÑ§£¬ÄãµÄÂèÂè½ÐÀîËÄ£¬ÊÇÒ»Ãû¹¤³ÌÊ¦"),
-    ChatMessage.FromUser("ÄãºÃÐ¡ÅóÓÑ£¬ÎÒÊÇÖÜÀÏÊ¦£¬ÄãÔÚÉÏÑ§£¿"),
+    ChatMessage.FromUser("ç³»ç»Ÿæç¤ºï¼šä½ å«å¼ ä¸‰ï¼Œä¸€å5å²ç”·å­©ï¼Œä½ åœ¨é‡‘è‰²æ‘‡ç¯®å¹¼å„¿å›­ä¸Šå­¦ï¼Œä½ çš„å¦ˆå¦ˆå«æŽå››ï¼Œæ˜¯ä¸€åå·¥ç¨‹å¸ˆ"),
+    ChatMessage.FromUser("ä½ å¥½å°æœ‹å‹ï¼Œæˆ‘æ˜¯å‘¨è€å¸ˆï¼Œä½ åœ¨ä¸Šå­¦ï¼Ÿ"),
 });
 Console.WriteLine(response.Text);
 ```
@@ -49,7 +49,7 @@ The following example shows how to use the `ChatAsStreamAsync` method to chat wi
 
 ```csharp
 SparkDeskClient client = new SparkDeskClient(appId, apiKey, apiSecret);
-await foreach (StreamedChatResponse msg in client.ChatAsStreamAsync(new ChatMessage[] { ChatMessage.FromUser("ºþÄÏµÄÊ¡»áÔÚÄÄ£¿") }, new ChatRequestParameters
+await foreach (StreamedChatResponse msg in client.ChatAsStreamAsync(new ChatMessage[] { ChatMessage.FromUser("æ¹–å—çš„çœä¼šåœ¨å“ªï¼Ÿ") }, new ChatRequestParameters
 {
     ChatId = "test",
     MaxTokens = 20,
@@ -72,7 +72,7 @@ TokensUsage usage = await client.ChatAsStreamAsync(new ChatMessage[]
 { 
     ChatMessage.FromUser("1+1=?"),
     ChatMessage.FromAssistant("1+1=3"),
-    ChatMessage.FromUser("²»¶Ô°¡£¬ÇëÔÙÏëÏë£¿")
+    ChatMessage.FromUser("ä¸å¯¹å•Šï¼Œè¯·å†æƒ³æƒ³ï¼Ÿ")
 }, s => sb.Append(s), uid: "zhoujie");
 
 string realResponse = sb.ToString();
