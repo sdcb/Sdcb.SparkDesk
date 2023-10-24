@@ -64,14 +64,14 @@ await foreach (StreamedChatResponse msg in client.ChatAsStreamAsync(ModelVersion
 }
 ```
 
-### Example 3: Chatting with a virtual assistant using streaming API and callback (V1.5 model)
+### Example 3: Chatting with a virtual assistant using streaming API and callback (V3 model)
 
-The following example shows how to use the `ChatAsStreamAsync` method to chat with a virtual assistant using V1.5 model, streaming API and callback:
+The following example shows how to use the `ChatAsStreamAsync` method to chat with a virtual assistant using V3 model, streaming API and callback:
 
 ```csharp
 SparkDeskClient client = new SparkDeskClient(appId, apiKey, apiSecret);
 StringBuilder sb = new();
-TokensUsage usage = await client.ChatAsStreamAsync(ModelVersion.V1_5, new ChatMessage[] 
+TokensUsage usage = await client.ChatAsStreamAsync(ModelVersion.V3, new ChatMessage[] 
 { 
     ChatMessage.FromUser("1+1=?"),
     ChatMessage.FromAssistant("1+1=3"),

@@ -62,14 +62,14 @@ await foreach (StreamedChatResponse msg in client.ChatAsStreamAsync(ModelVersion
 }
 ```
 
-### 示例3：使用流API和回调与虚拟助手聊天 (V1.5模型)
+### 示例3：使用流API和回调与虚拟助手聊天 (V3模型)
 
-以下示例显示了如何使用 `ChatAsStreamAsync` 方法以及V1.5模型、流API和回调与虚拟助手聊天：
+以下示例显示了如何使用 `ChatAsStreamAsync` 方法以及V3模型、流API和回调与虚拟助手聊天：
 
 ```csharp
 SparkDeskClient client = new SparkDeskClient(appId, apiKey, apiSecret);
 StringBuilder sb = new();
-TokensUsage usage = await client.ChatAsStreamAsync(ModelVersion.V1_5, new ChatMessage[] 
+TokensUsage usage = await client.ChatAsStreamAsync(ModelVersion.V3, new ChatMessage[] 
 { 
     ChatMessage.FromUser("1+1=?"),
     ChatMessage.FromAssistant("1+1=3"),

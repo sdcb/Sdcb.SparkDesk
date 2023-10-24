@@ -21,7 +21,7 @@ static void DotNetRun(string args) => Run("dotnet", args, Encoding.GetEncoding("
 static void Run(string exe, string args, Encoding encoding) => Util.Cmd(exe, args, encoding);
 static ProjectVersion[] Projects = new[]
 {
-	new ProjectVersion("Sdcb.SparkDesk", "2.0"), 
+	new ProjectVersion("Sdcb.SparkDesk", "2.1"), 
 };
 
 static async Task DownloadFile(Uri uri, string localFile, CancellationToken cancellationToken = default)

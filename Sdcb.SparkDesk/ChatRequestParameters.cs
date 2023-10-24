@@ -86,4 +86,9 @@ public enum ModelVersion
     /// v2 version
     /// </summary>
     V2,
+
+    /// <summary>
+    /// v3 version
+    /// </summary>
+    V3,
 }
