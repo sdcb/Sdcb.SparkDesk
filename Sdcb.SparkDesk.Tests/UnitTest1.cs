@@ -104,7 +104,7 @@ public class UnitTest1
     {
         SparkDeskClient c = CreateSparkDeskClient();
         StringBuilder sb = new();
-        TokensUsage usage = await c.ChatAsStreamAsync(ModelVersion.V2, new ChatMessage[]
+        TokensUsage usage = await c.ChatAsStreamAsync(ModelVersion.V3, new ChatMessage[]
         {
             ChatMessage.FromUser("1+1=?"),
             ChatMessage.FromAssistant("1+1=3"),

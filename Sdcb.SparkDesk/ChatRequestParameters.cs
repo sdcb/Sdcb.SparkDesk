@@ -58,6 +58,7 @@ internal class ChatRequestParametersInternal : ChatRequestParameters
         {
             ModelVersion.V1_5 => "general",
             ModelVersion.V2 => "generalv2",
+            ModelVersion.V3 => "generalv3",
             _ => throw new ArgumentOutOfRangeException(nameof(version), version, null),
         };
     }
