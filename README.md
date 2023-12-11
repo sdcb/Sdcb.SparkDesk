@@ -2,7 +2,7 @@
 
 **[English](README_EN.md)** | **简体中文**
 
-`Sdcb.SparkDesk`是一个非官方的开源项目，提供SparkDesk WebSocket API (https://console.xfyun.cn/services/cbm) 的 .NET 客户端。现在已支持ModelVersion，用户可以选择包括V2模型在内的各种版本模型。上游文档地址：https://www.xfyun.cn/doc/spark/Guide.html
+`Sdcb.SparkDesk`是一个非官方的开源项目，提供SparkDesk WebSocket API (https://console.xfyun.cn/services/cbm) 的 .NET 客户端。现在已支持ModelVersion，用户可以选择包括V3模型在内的各种版本模型。上游文档地址：https://www.xfyun.cn/doc/spark/Guide.html
 
 这个项目可以用来开发能够用自然语言与用户交流的聊天机器人和虚拟助手。
 
