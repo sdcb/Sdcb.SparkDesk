@@ -12,7 +12,7 @@ This project can be used to build chatbots and virtual assistants that can commu
 - Supports both synchronous and asynchronous communication
 - Implements streaming APIs for real-time communication
 - Provides a simple and intuitive API for chatbot development
-- Supports ModelVersion allowing users to choose between different versions of models
+- Supports ModelVersion(V1_5, V2, V3, V3_5) allowing users to choose between different versions of models
 
 ## Installation
 
@@ -30,7 +30,7 @@ To use Sdcb.SparkDesk, you need to create an instance of the `SparkDeskClient` c
 SparkDeskClient client = new SparkDeskClient(appId, apiKey, apiSecret);
 ```
 
-### Example 1: Chatting with a virtual assistant (V1 model)
+### Example 1: Chatting with a virtual assistant (V1.5 model)
 
 The following example shows how to use the `ChatAsync` method to chat with a virtual assistant:
 

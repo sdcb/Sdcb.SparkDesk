@@ -12,7 +12,7 @@
 - 支持同步和异步通信。
 - 实现了流API，以实现实时通信。
 - 为聊天机器人开发提供了简单直观的API。
-- 支持 ModelVersion，允许用户在不同版本的模型中选择。
+- 支持 ModelVersion（V1_5, V2, V3, V3_5），允许用户在不同版本的模型中选择。
 
 ## 安装
 
@@ -30,7 +30,7 @@ Install-Package Sdcb.SparkDesk
 SparkDeskClient client = new SparkDeskClient(appId, apiKey, apiSecret);
 ```
 
-### 示例1：与虚拟助手聊天（V1模型）
+### 示例1：与虚拟助手聊天（V1.5模型）
 
 以下示例显示了如何使用 `ChatAsync` 方法与虚拟助手聊天：
 
