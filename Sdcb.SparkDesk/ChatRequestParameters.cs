@@ -16,7 +16,7 @@ public class ChatRequestParameters
     public float Temperature { get; set; } = 0.5f;
 
     /// <summary>
-    /// Specifies the maximum length of model response in tokens, Range: [1,4096], default: 2048.
+    /// Specifies the maximum length of model response in tokens, Range: [1,4096] for v1.5, [1, 8192] for v2.0/v3.0/v3.5, default: 2048.
     /// </summary>
     [JsonPropertyName("max_tokens")]
     public int MaxTokens { get; set; } = 2048;
@@ -59,12 +59,13 @@ internal class ChatRequestParametersInternal : ChatRequestParameters
             ModelVersion.V1_5 => "general",
             ModelVersion.V2 => "generalv2",
             ModelVersion.V3 => "generalv3",
+            ModelVersion.V3_5 => "generalv3.5",
             _ => throw new ArgumentOutOfRangeException(nameof(version), version, null),
         };
     }
 
     /// <summary>
-    /// Specify the model version: 'general': v1.5, 'generalv2': v2.
+    /// Specify the model version: 'general': v1.5, 'generalv2': v2, 'generalv3': v3, 'generalv3.5': v3.5
     /// </summary>
     /// <remarks>
     /// Note: Different values correspond to different URLs!
@@ -92,4 +93,9 @@ public enum ModelVersion
     /// v3 version
     /// </summary>
     V3,
+
+    /// <summary>
+    /// v3.5 version
+    /// </summary>
+    V3_5,
 }

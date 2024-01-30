@@ -11,7 +11,7 @@ public class ChatMessage
     /// <summary>
     /// Initializes a new instance of the <see cref="ChatMessage"/> class with the specified role and content.
     /// </summary>
-    /// <param name="role">Specifies the role of the message. Can be "user" for a user's question or "assistant" for an AI response.</param>
+    /// <param name="role">Specifies the role of the message. Can be "user" for a user's question, "assistant" for an AI response, "system" for a system message.</param>
     /// <param name="content">The content of the message for the user or the AI. Note that the total tokens of all content properties must be within 8192 tokens.</param>
     [SetsRequiredMembers]
     public ChatMessage(string role, string content)
@@ -21,7 +21,7 @@ public class ChatMessage
     }
 
     /// <summary>
-    /// Specifies the role of the message. Can be "user" for a user's question or "assistant" for an AI response.
+    /// Specifies the role of the message. Can be "user" for a user's question, "assistant" for an AI response, "system" for a system message.
     /// </summary>
     [JsonPropertyName("role")]
     public required string Role { get; set; }
@@ -45,4 +45,11 @@ public class ChatMessage
     /// <param name="content">The text content of the AI assistant's message.</param>
     /// <returns>A new <see cref="ChatMessage"/> instance representing the AI assistant's message.</returns>
     public static ChatMessage FromAssistant(string content) => new("assistant", content);
+
+    /// <summary>
+    /// Creates a new <see cref="ChatMessage"/> instance for a system message with the specified message content.
+    /// </summary>
+    /// <param name="content">The text content of the system message.</param>
+    /// <returns></returns>
+    public static ChatMessage FromSystem(string content) => new("system", content);
 }

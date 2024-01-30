@@ -100,6 +100,7 @@ public class SparkDeskClient
             ModelVersion.V1_5 => "wss://spark-api.xf-yun.com/v1.1/chat", 
             ModelVersion.V2 => "wss://spark-api.xf-yun.com/v2.1/chat",
             ModelVersion.V3 => "wss://spark-api.xf-yun.com/v3.1/chat",
+            ModelVersion.V3_5 => "wss://spark-api.xf-yun.com/v3.5/chat",
             _ => throw new ArgumentException($"Unsupported model version: {modelVersion}", nameof(modelVersion))
         };
     }

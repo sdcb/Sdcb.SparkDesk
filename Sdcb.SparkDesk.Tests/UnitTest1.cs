@@ -115,4 +115,22 @@ public class UnitTest1
         _console.WriteLine(realResponse);
         Assert.Contains("2", realResponse);
     }
+
+    [Fact]
+    public async Task V3_5ShouldSupportSystem()
+    {
+        SparkDeskClient c = CreateSparkDeskClient();
+        StringBuilder sb = new();
+        TokensUsage usage = await c.ChatAsStreamAsync(ModelVersion.V3_5, new ChatMessage[]
+        {
+            ChatMessage.FromSystem("你是反义词机器人，你需要说出用户输入的反义词"),
+            ChatMessage.FromUser("true"),
+            ChatMessage.FromAssistant("false"),
+            ChatMessage.FromUser("上")
+        }, s => sb.Append(s), uid: "zhoujie");
+
+        string realResponse = sb.ToString();
+        _console.WriteLine(realResponse);
+        Assert.Contains("下", realResponse);
+    }
 }
