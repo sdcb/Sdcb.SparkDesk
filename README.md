@@ -13,6 +13,7 @@
 - 实现了流API，以实现实时通信。
 - 为聊天机器人开发提供了简单直观的API。
 - 支持 ModelVersion（V1_5, V2, V3, V3_5），允许用户在不同版本的模型中选择。
+- 支持Function Call API（V3/3.5），允许用户调用自定义函数。
 
 ## 安装
 
@@ -108,6 +109,88 @@ while (true)
     Console.WriteLine();
     conversation.Add(ChatMessage.FromAssistant(resp.ToString()));
 }
+```
+
+### 示例5：使用Function Call API（V3.0/V3.5模型支持）
+
+为了创建一个使用Function Call API的示例，我们首先需要定义一个或多个`FunctionDef`对象，代表我们要调用的函数。之后，我们会在`ChatAsync`的调用中使用这些`FunctionDef`对象，并处理返回的`ChatResponse`以获取`FunctionCall`的详情。
+
+我们将创建一个Function Call来查询天气，并验证返回的`FunctionCall`对象含有正确的函数名和参数。
+
+下面是如何实现此示例的代码：
+
+```csharp
+SparkDeskClient client = new SparkDeskClient(appId, apiKey, apiSecret);
+
+ChatResponse response = await client.ChatAsync(ModelVersion.V3_5,
+    new ChatMessage[]
+    {
+        ChatMessage.FromSystem("你是用户助理，当前日期：2024-03-09"),
+        ChatMessage.FromUser("请问明天长沙天气如何？"),
+    },
+    functions: new FunctionDef[]
+    {
+        new FunctionDef("queryWeather", "查询天气",
+        new []
+        {
+            new FunctionParametersDef("city", "string", "城市名"),
+            new FunctionParametersDef("date", "date", "日期，必须是yyyy-MM-dd这样的形式"),
+            new FunctionParametersDef("unit", "enum", "温度单位，只能是：[摄氏度,华氏度]二选一"),
+        }),
+        new FunctionDef("googleSearch", "谷歌搜索",
+        new []
+        {
+            new FunctionParametersDef("query", "string", "搜索关键词"),
+        })
+    },
+    uid: "zhoujie");
+
+// 处理返回的响应
+if (response.FunctionCall != null)
+{
+    Console.WriteLine($"Function Call: {response.FunctionCall.Name}");
+    var args = response.FunctionCall.Arguments; // 这是一个JSON字符串
+    Console.WriteLine($"Arguments: {args}");
+}
+else
+{
+    Console.WriteLine("Function Call not triggered.");
+}
+```
+
+根据代码，我们期望`response.FunctionCall`中包含的函数名是`"queryWeather"`，而且参数应该包含城市名`"长沙"`，日期`"2024-03-10"`和温度单位`"摄氏度"`。
+
+这个示例中，我们没有实际实现Function Call的真正查询天气逻辑。假设你已经将天气查询完成，我们可以使用一个带有Function Call结果的`ChatMessage.FromUser`，这样假设Function Call已经被触发并完成了，然后注入结果用于接下来的聊天。
+
+```csharp
+StringBuilder sb = new StringBuilder();
+
+await foreach (StreamedChatResponse msg in client.ChatAsStreamAsync(ModelVersion.V3_5, new ChatMessage[]
+{
+    ChatMessage.FromSystem("你是用户助理，当前日期：2024-03-09"),
+    ChatMessage.FromUser("请问明天长沙天气如何？"),
+    ChatMessage.FromUser(@"
+        function call result: 
+        {
+            ""city"": ""长沙"",
+            ""date"": ""2024-03-10"",
+            ""weather"": ""晴"",
+            ""temperature"": ""20"",
+            ""unit"": ""摄氏度""
+        }
+    ")
+}, uid: "zhoujie"))
+{
+    Console.Write(msg.Text + msg.Usage);
+}
+```
+
+输出示例如下：
+
+```
+明天，也就是2024年3月10日，长沙的天气将会是晴朗的。
+预计的温度会达到20摄氏度。
+TokensUsage { QuestionTokens = 68, PromptTokens = 91, CompletionTokens = 30, TotalTokens = 121 }
 ```
 
 ## 许可证

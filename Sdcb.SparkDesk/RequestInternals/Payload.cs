@@ -12,4 +12,7 @@ internal class Payload
     /// </summary>
     [JsonPropertyName("message")]
     public required Message Message { get; set; }
+
+    [JsonPropertyName("functions")]
+    public FunctionCallDto? Functions { get; set; }
 }

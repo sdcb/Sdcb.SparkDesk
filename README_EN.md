@@ -13,6 +13,7 @@ This project can be used to build chatbots and virtual assistants that can commu
 - Implements streaming APIs for real-time communication
 - Provides a simple and intuitive API for chatbot development
 - Supports ModelVersion(V1_5, V2, V3, V3_5) allowing users to choose between different versions of models
+- Supports Function Call API in V3.0/V3.5 models
 
 ## Installation
 
@@ -108,6 +109,89 @@ while (true)
     Console.WriteLine();
     conversation.Add(ChatMessage.FromAssistant(resp.ToString()));
 }
+```
+
+### Example 5: Using Function Call API (Supported in V3.0/V3.5 Models)
+
+To create an example using the Function Call API, we first need to define one or more `FunctionDef` objects, representing the functions we want to invoke. Afterward, we will use these `FunctionDef` objects in our call to `ChatAsync` and handle the returned `ChatResponse` to obtain the details of the `FunctionCall`.
+
+We will create a Function Call to check the weather and verify that the returned `FunctionCall` object contains the correct function name and parameters.
+
+Below is the code to implement this example:
+
+```csharp
+SparkDeskClient client = new SparkDeskClient(appId, apiKey, apiSecret);
+
+ChatResponse response = await client.ChatAsync(ModelVersion.V3_5,
+    new ChatMessage[]
+    {
+        ChatMessage.FromSystem("You are the user assistant, current date: 2024-03-09"),
+        ChatMessage.FromUser("How is the weather in Changsha tomorrow?"),
+    },
+    functions: new FunctionDef[]
+    {
+        new FunctionDef("queryWeather", "Query weather",
+        new []
+        {
+            new FunctionParametersDef("city", "string", "City name"),
+            new FunctionParametersDef("date", "date", "Date, must be in the form of yyyy-MM-dd"),
+            new FunctionParametersDef("unit", "enum", "Temperature unit, can only be one of the following: [Celsius, Fahrenheit]"),
+        }),
+        new FunctionDef("googleSearch", "Google search",
+        new []
+        {
+            new FunctionParametersDef("query", "string", "Search keywords"),
+        })
+    },
+    uid: "zhoujie");
+
+// Handle the returned response
+if (response.FunctionCall != null)
+{
+    Console.WriteLine($"Function Call: {response.FunctionCall.Name}");
+    var args = response.FunctionCall.Arguments; // This is a JSON string
+    Console.WriteLine($"Arguments: {args}");
+}
+else
+{
+    Console.WriteLine("Function Call not triggered.");
+}
+```
+
+According to the code, we expect the function name in `response.FunctionCall` to be `"queryWeather"`, and the parameters should include the city name `"Changsha"`, the date `"2024-03-10"`, and the temperature unit `"Celsius"`.
+
+In this example, we do not implement the actual weather query logic of the Function Call. Assuming that the weather query has been completed, we can use a `ChatMessage.FromUser` with the Function Call result, as if the Function Call has been triggered and completed, and then inject the outcome for the subsequent chat.
+
+```csharp
+StringBuilder sb = new StringBuilder();
+
+await foreach (StreamedChatResponse msg in client.ChatAsStreamAsync(ModelVersion.V3_5, new ChatMessage[]
+{
+    ChatMessage.FromSystem("You are the user assistant, current date: 2024-03-09"),
+    ChatMessage.FromUser("How is the weather in Changsha tomorrow?"),
+    ChatMessage.FromUser(@"
+        function call result: 
+        {
+            ""city"": ""Changsha"",
+            ""date"": ""2024-03-10"",
+            ""weather"": ""Clear"",
+            ""temperature"": ""20"",
+            ""unit"": ""Celsius""
+        }
+    ")
+}, uid: "zhoujie"))
+{
+    sb.AppendLine(msg.Text);
+    Console.WriteLine(msg.Text + msg.Usage);
+}
+```
+
+The output example is as follows:
+
+```
+Tomorrow, which is March 10, 2024, the weather in Changsha will be clear.
+The expected temperature will reach 20 degrees Celsius.
+TokensUsage { QuestionTokens = 68, PromptTokens = 91, CompletionTokens = 30, TotalTokens = 121 }
 ```
 
 ## License

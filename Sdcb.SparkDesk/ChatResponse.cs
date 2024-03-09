@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Sdcb.SparkDesk.ResponseInternals;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -28,6 +29,18 @@ public readonly record struct ChatResponse
     /// </summary>
     /// <returns>The concatenated text of all <see cref="StreamedChatResponse"/> objects.</returns>
     public readonly string Text => string.Concat(StreamedResponses.Select(x => x.Text));
+
+    /// <summary>
+    /// Gets the content type of the chat stream response. 
+    /// This can be null if the content type is not specified.
+    /// </summary>
+    public string? ContentType => StreamedResponses[StreamedResponses.Count - 1].ContentType;
+
+    /// <summary>
+    /// Gets the function call associated with the chat stream response.
+    /// This can be null if there is no function call associated.
+    /// </summary>
+    public FunctionCall? FunctionCall => StreamedResponses[StreamedResponses.Count - 1].FunctionCall;
 
     /// <summary>
     /// Gets the <see cref="TokensUsage"/> of the last <see cref="StreamedChatResponse"/> object in the StreamedResponses array.
