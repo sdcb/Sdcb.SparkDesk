@@ -53,15 +53,8 @@ internal class ChatRequestParametersInternal : ChatRequestParameters
             TopK = req.TopK;
             ChatId = req.ChatId;
         }
-        
-        Domain = version switch
-        {
-            ModelVersion.V1_5 => "general",
-            ModelVersion.V2 => "generalv2",
-            ModelVersion.V3 => "generalv3",
-            ModelVersion.V3_5 => "generalv3.5",
-            _ => throw new ArgumentOutOfRangeException(nameof(version), version, null),
-        };
+
+        Domain = version.Domain;
     }
 
     /// <summary>
@@ -72,30 +65,4 @@ internal class ChatRequestParametersInternal : ChatRequestParameters
     /// </remarks>
     [JsonPropertyName("domain")]
     public required string Domain { get; set; }
-}
-
-/// <summary>
-/// Model versions for Spark Desk Large Model.
-/// </summary>
-public enum ModelVersion
-{
-    /// <summary>
-    /// v1.5 version
-    /// </summary>
-    V1_5,
-
-    /// <summary>
-    /// v2 version
-    /// </summary>
-    V2,
-
-    /// <summary>
-    /// v3 version
-    /// </summary>
-    V3,
-
-    /// <summary>
-    /// v3.5 version
-    /// </summary>
-    V3_5,
 }

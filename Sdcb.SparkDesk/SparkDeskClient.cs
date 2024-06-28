@@ -93,18 +93,6 @@ public class SparkDeskClient
         return new ChatResponse(resps);
     }
 
-    internal static string GetHostUrlByModelVersion(ModelVersion modelVersion)
-    {
-        return modelVersion switch
-        {
-            ModelVersion.V1_5 => "wss://spark-api.xf-yun.com/v1.1/chat", 
-            ModelVersion.V2 => "wss://spark-api.xf-yun.com/v2.1/chat",
-            ModelVersion.V3 => "wss://spark-api.xf-yun.com/v3.1/chat",
-            ModelVersion.V3_5 => "wss://spark-api.xf-yun.com/v3.5/chat",
-            _ => throw new ArgumentException($"Unsupported model version: {modelVersion}", nameof(modelVersion))
-        };
-    }
-
     /// <summary>
     /// Sends chat messages to SparkDesk API through websockets and receives response streams asynchronously.
     /// </summary>
@@ -123,7 +111,7 @@ public class SparkDeskClient
     {
         using ClientWebSocket webSocket = new();
 
-        await webSocket.ConnectAsync(new Uri(GetAuthorizationUrl(_apiKey, _apiSecret, GetHostUrlByModelVersion(modelVersion))), cancellationToken);
+        await webSocket.ConnectAsync(new Uri(GetAuthorizationUrl(_apiKey, _apiSecret, modelVersion.WebsocketUrl)), cancellationToken);
 
         ArraySegment<byte> messageBuffer = new(JsonSerializer.SerializeToUtf8Bytes(new ChatApiRequest
         {
