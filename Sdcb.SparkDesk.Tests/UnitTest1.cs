@@ -18,7 +18,7 @@ public class UnitTest1
 
     public static IConfigurationRoot Config { get; }
 
-    static SparkDeskClient CreateSparkDeskClient()
+    internal static SparkDeskClient CreateSparkDeskClient()
     {
         string? appId = Config["SparkConfig:AppId"];
         string? apiKey = Config["SparkConfig:ApiKey"];
@@ -37,7 +37,7 @@ public class UnitTest1
     public async Task ChatAsStreamAsyncTest()
     {
         SparkDeskClient c = CreateSparkDeskClient();
-        await foreach (StreamedChatResponse msg in c.ChatAsStreamAsync(ModelVersion.Lite, new ChatMessage[] { ChatMessage.FromUser("湖南的省会在哪？") }, new ChatRequestParameters
+        await foreach (StreamedChatResponse msg in c.ChatAsStreamAsync(ModelVersion.Lite, [ ChatMessage.FromUser("湖南的省会在哪？") ], new ChatRequestParameters
         {
             ChatId = "test",
             MaxTokens = 20,
@@ -53,7 +53,7 @@ public class UnitTest1
     public async Task ChatAsStreamV2AsyncTest()
     {
         SparkDeskClient c = CreateSparkDeskClient();
-        await foreach (StreamedChatResponse msg in c.ChatAsStreamAsync(ModelVersion.V2_0, new ChatMessage[] { ChatMessage.FromUser("湖南的省会在哪？") }, new ChatRequestParameters
+        await foreach (StreamedChatResponse msg in c.ChatAsStreamAsync(ModelVersion.V2_0, [ ChatMessage.FromUser("湖南的省会在哪？") ], new ChatRequestParameters
         {
             ChatId = "test",
             MaxTokens = 20,
@@ -73,11 +73,11 @@ public class UnitTest1
     public async Task ChatAsyncTest()
     {
         SparkDeskClient c = CreateSparkDeskClient();
-        ChatResponse msg = await c.ChatAsync(ModelVersion.V2_0, new ChatMessage[]
-        {
-            ChatMessage.FromUser("系统提示：你叫张三，一名5岁男孩，你在金色摇篮幼儿园上学，你的妈妈叫李四，是一名工程师"),
-            ChatMessage.FromUser("你好小朋友，我是周老师，你在上学？"),
-        });
+        ChatResponse msg = await c.ChatAsync(ModelVersion.V2_0,
+        [
+            ChatMessage.FromSystem("系统提示：你叫张三，一名5岁男孩，你在金色摇篮幼儿园上学，你的妈妈叫李四，是一名工程师"),
+            ChatMessage.FromUser("你好小朋友，我是王阿姨，你在哪里上学？"),
+        ]);
         _console.WriteLine(msg.Text);
         Assert.Contains("金色摇篮幼儿园", msg.Text);
     }
@@ -87,12 +87,12 @@ public class UnitTest1
     {
         SparkDeskClient c = CreateSparkDeskClient();
         StringBuilder sb = new();
-        TokensUsage usage = await c.ChatAsStreamAsync(ModelVersion.V2_0, new ChatMessage[]
-        {
+        TokensUsage usage = await c.ChatAsStreamAsync(ModelVersion.V2_0,
+        [
             ChatMessage.FromUser("1+1=?"),
             ChatMessage.FromAssistant("1+1=3"),
             ChatMessage.FromUser("不对啊，请再想想？")
-        }, s => sb.Append(s), uid: "zhoujie");
+        ], s => sb.Append(s), uid: "zhoujie");
 
         string realResponse = sb.ToString();
         _console.WriteLine(realResponse);
@@ -104,12 +104,12 @@ public class UnitTest1
     {
         SparkDeskClient c = CreateSparkDeskClient();
         StringBuilder sb = new();
-        TokensUsage usage = await c.ChatAsStreamAsync(ModelVersion.Pro, new ChatMessage[]
-        {
+        TokensUsage usage = await c.ChatAsStreamAsync(ModelVersion.Pro,
+        [
             ChatMessage.FromUser("1+1=?"),
             ChatMessage.FromAssistant("1+1=3"),
             ChatMessage.FromUser("不对啊，请再想想？")
-        }, s => sb.Append(s), uid: "zhoujie");
+        ], s => sb.Append(s), uid: "zhoujie");
 
         string realResponse = sb.ToString();
         _console.WriteLine(realResponse);
@@ -121,13 +121,13 @@ public class UnitTest1
     {
         SparkDeskClient c = CreateSparkDeskClient();
         StringBuilder sb = new();
-        TokensUsage usage = await c.ChatAsStreamAsync(ModelVersion.Max, new ChatMessage[]
-        {
+        TokensUsage usage = await c.ChatAsStreamAsync(ModelVersion.Max, 
+        [
             ChatMessage.FromSystem("你是反义词机器人，你需要说出用户输入的反义词"),
             ChatMessage.FromUser("true"),
             ChatMessage.FromAssistant("false"),
             ChatMessage.FromUser("上")
-        }, s => sb.Append(s), uid: "zhoujie");
+        ], s => sb.Append(s), uid: "zhoujie");
 
         string realResponse = sb.ToString();
         _console.WriteLine(realResponse);
@@ -139,13 +139,13 @@ public class UnitTest1
     {
         SparkDeskClient c = CreateSparkDeskClient();
         StringBuilder sb = new();
-        TokensUsage usage = await c.ChatAsStreamAsync(ModelVersion.V4_0_Ultra, new ChatMessage[]
-        {
+        TokensUsage usage = await c.ChatAsStreamAsync(ModelVersion.V4_0_Ultra,
+        [
             ChatMessage.FromSystem("你是反义词机器人，你需要说出用户输入的反义词"),
             ChatMessage.FromUser("true"),
             ChatMessage.FromAssistant("false"),
             ChatMessage.FromUser("上")
-        }, s => sb.Append(s), uid: "zhoujie");
+        ], s => sb.Append(s), uid: "zhoujie");
 
         string realResponse = sb.ToString();
         _console.WriteLine(realResponse);

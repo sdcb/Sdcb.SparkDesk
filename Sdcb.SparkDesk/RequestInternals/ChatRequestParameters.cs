@@ -5,7 +5,7 @@ namespace Sdcb.SparkDesk.RequestInternals;
 /// <summary>
 /// Represents the chat parameters for the API request.
 /// </summary>
-internal class Parameters
+internal class ChatRequestParameters
 {
     /// <summary>
     /// Contains chat-related properties such as domain, temperature, max tokens, and so on.

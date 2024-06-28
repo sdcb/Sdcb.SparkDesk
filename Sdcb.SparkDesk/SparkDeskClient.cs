@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Sdcb.SparkDesk.ResponseInternals;
 using Sdcb.SparkDesk.RequestInternals;
 using System.Collections;
+using System.Text.Json.Serialization;
 
 [assembly: InternalsVisibleTo("Sdcb.SparkDesk.Tests")]
 
@@ -25,6 +26,11 @@ public class SparkDeskClient
     private readonly string _appId;
     private readonly string _apiKey;
     private readonly string _apiSecret;
+
+    private readonly static JsonSerializerOptions _defaultJsonEncodingOptions = new()
+    {
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+    };
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SparkDeskClient"/> class with specified parameters.
@@ -45,6 +51,7 @@ public class SparkDeskClient
     /// </summary>
     /// <param name="modelVersion">The version of SparkDesk model.</param>
     /// <param name="messages">The messages to send.</param>
+    /// <param name="functions">The supported function calls to send.</param>
     /// <param name="chatCallback">The callback to receive the response.</param>
     /// <param name="parameters">Optional parameters for the request.</param>
     /// <param name="uid">Optional uid for the request.</param>
@@ -52,14 +59,15 @@ public class SparkDeskClient
     /// <returns>The usage of the tokens.</returns>
     public async Task<TokensUsage> ChatAsStreamAsync(
         ModelVersion modelVersion,
-        ChatMessage[] messages, 
-        Action<string> chatCallback, 
-        ChatRequestParameters? parameters = null, 
-        string? uid = null, 
+        ChatMessage[] messages,
+        Action<string> chatCallback,
+        ChatRequestParameters? parameters = null,
+        FunctionDef[]? functions = null,
+        string? uid = null,
         CancellationToken cancellationToken = default)
     {
         TokensUsage? usage = null;
-        await foreach (StreamedChatResponse msg in ChatAsStreamAsync(modelVersion, messages, parameters, uid, cancellationToken))
+        await foreach (StreamedChatResponse msg in ChatAsStreamAsync(modelVersion, messages, parameters, functions, uid, cancellationToken))
         {
             chatCallback(msg.Text);
             usage ??= msg.Usage;
@@ -73,19 +81,21 @@ public class SparkDeskClient
     /// </summary>
     /// <param name="modelVersion">The version of SparkDesk model.</param>
     /// <param name="messages">Array of chat messages to send to SparkDesk API.</param>
+    /// <param name="functions">Array of supported function calls to sent to SparkDesk API.</param>
     /// <param name="parameters">Optional parameters to modify chat request.</param>
     /// <param name="uid">Optional user ID to associate with the chat messages.</param>
     /// <param name="cancellationToken">Optional cancellation token to stop the operation.</param>
     /// <returns>Asynchronous task that returns a <see cref="ChatResponse"/> object containing the streamed chat response.</returns>
     public async Task<ChatResponse> ChatAsync(
         ModelVersion modelVersion,
-        ChatMessage[] messages, 
-        ChatRequestParameters? parameters = null, 
-        string? uid = null, 
+        ChatMessage[] messages,
+        ChatRequestParameters? parameters = null,
+        FunctionDef[]? functions = null,
+        string? uid = null,
         CancellationToken cancellationToken = default)
     {
         List<StreamedChatResponse> resps = new();
-        await foreach (StreamedChatResponse msg in ChatAsStreamAsync(modelVersion, messages, parameters, uid, cancellationToken))
+        await foreach (StreamedChatResponse msg in ChatAsStreamAsync(modelVersion, messages, parameters, functions, uid, cancellationToken))
         {
             resps.Add(msg);
         }
@@ -98,15 +108,17 @@ public class SparkDeskClient
     /// </summary>
     /// <param name="modelVersion">The version of SparkDesk model.</param>
     /// <param name="messages">Array of chat messages to send to SparkDesk API.</param>
+    /// <param name="functions">Array of supported function calls to send to SparkDesk API.</param>
     /// <param name="parameters">Optional parameters to modify chat request.</param>
     /// <param name="uid">Optional user ID to associate with the chat messages.</param>
     /// <param name="cancellationToken">Optional cancellation token to stop the operation.</param>
     /// <returns>Asynchronous stream of responses from SparkDesk API.</returns>
     public async IAsyncEnumerable<StreamedChatResponse> ChatAsStreamAsync(
         ModelVersion modelVersion,
-        ChatMessage[] messages, 
-        ChatRequestParameters? parameters = null, 
-        string? uid = null, 
+        ChatMessage[] messages,
+        ChatRequestParameters? parameters = null,
+        FunctionDef[]? functions = null,
+        string? uid = null,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         using ClientWebSocket webSocket = new();
@@ -116,12 +128,13 @@ public class SparkDeskClient
         ArraySegment<byte> messageBuffer = new(JsonSerializer.SerializeToUtf8Bytes(new ChatApiRequest
         {
             Header = new ChatRequestHeader { AppId = _appId, Uid = uid },
-            Parameter = new Parameters { Chat = new ChatRequestParametersInternal(modelVersion, parameters) },
+            Parameter = new RequestInternals.ChatRequestParameters { Chat = new ChatRequestParametersInternal(modelVersion, parameters) },
             Payload = new Payload
             {
-                Message = new Message { Text = messages }
+                Message = new Message { Text = messages },
+                Functions = functions is null ? null : FunctionCallDto.FromFunctionDefs(functions)
             },
-        }));
+        }, _defaultJsonEncodingOptions));
         await webSocket.SendAsync(messageBuffer, WebSocketMessageType.Text, true, cancellationToken);
 
         byte[] buffer = new byte[4096];
@@ -132,14 +145,28 @@ public class SparkDeskClient
 
             if (result.MessageType == WebSocketMessageType.Text)
             {
-                ChatApiResponse resp = await JsonSerializer.DeserializeAsync<ChatApiResponse>(new MemoryStream(buffer, 0, result.Count), cancellationToken: cancellationToken)
-                    ?? throw new SparkDeskException($"Can't deserialize response from spark desk API, raw response: {Encoding.UTF8.GetString(buffer, 0, result.Count)}.");
+                ChatApiResponse resp = null!;
+                try
+                {
+                    resp = await JsonSerializer.DeserializeAsync<ChatApiResponse>(new MemoryStream(buffer, 0, result.Count), cancellationToken: cancellationToken)
+                        ?? throw new SparkDeskException($"Can't deserialize response from spark desk API, raw response: {Encoding.UTF8.GetString(buffer, 0, result.Count)}.");
+                }
+                catch (JsonException ex)
+                {
+                    throw new SparkDeskException($"Can't deserialize response from spark desk API, reason: {ex.Message}, raw response: {Encoding.UTF8.GetString(buffer, 0, result.Count)}.");
+                }
+
                 if (resp.Header.Code != 0)
                 {
                     throw new SparkDeskException(resp.Header.Code, resp.Header.Sid, resp.Header.Message);
                 }
 
-                yield return new StreamedChatResponse(string.Concat(resp.Payload!.Choices.Text.Select(x => x.Content)), resp.Payload.Usage?.Text);
+                ResponseChatMessage choice = resp.Payload!.Choices.Text[0];
+                yield return new StreamedChatResponse(
+                    choice.Content, 
+                    resp.Payload.Usage?.Text, 
+                    choice.ContentType, 
+                    choice.FunctionCall);
 
                 if (resp.Header.Status == 2)
                 {

@@ -17,7 +17,7 @@ internal class ChatApiRequest
     /// Contains parameter information for the chat domain, temperature, max tokens, etc.
     /// </summary>
     [JsonPropertyName("parameter")]
-    public required Parameters Parameter { get; set; }
+    public required ChatRequestParameters Parameter { get; set; }
 
     /// <summary>
     /// Contains the payload information which includes a list of user and assistant messages.

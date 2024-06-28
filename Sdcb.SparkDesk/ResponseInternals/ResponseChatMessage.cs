@@ -24,4 +24,34 @@ internal class ResponseChatMessage
     /// </summary>
     [JsonPropertyName("index")]
     public int Index { get; set; }
+
+    /// <summary>
+    /// Gets or sets the type of content in the message. (e.g., "text")
+    /// </summary>
+    [JsonPropertyName("content_type")]
+    public string? ContentType { get; init; }
+
+    /// <summary>
+    /// Gets or sets the function call associated with the message.
+    /// </summary>
+    [JsonPropertyName("function_call")]
+    public FunctionCall? FunctionCall { get; init; }
+}
+
+/// <summary>
+/// Represents a function call with its arguments and name.
+/// </summary>
+public record FunctionCall
+{
+    /// <summary>
+    /// Gets or sets the JSON representation of the arguments for the function call.
+    /// </summary>
+    [JsonPropertyName("arguments")]
+    public required string Arguments { get; init; }
+
+    /// <summary>
+    /// Gets or sets the name of the function to be called.
+    /// </summary>
+    [JsonPropertyName("name")]
+    public required string Name { get; init; }
 }
